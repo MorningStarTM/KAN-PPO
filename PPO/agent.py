@@ -143,3 +143,22 @@ class PPO:
             print("--------------------------------------------------------------------------------------------")
             print("WARNING : Calling PPO::set_action_std() on discrete action space policy")
             print("--------------------------------------------------------------------------------------------")
+
+    
+    def decay_action_std(self, action_std_decay_rate, min_action_std):
+        print("--------------------------------------------------------------------------------------------")
+
+        if self.has_continuous_action_space:
+            self.action_std = self.action_std - action_std_decay_rate
+            self.action_std = round(self.action_std, 4)
+            if (self.action_std <= min_action_std):
+                self.action_std = min_action_std
+                print("setting actor output action_std to min_action_std : ", self.action_std)
+            else:
+                print("setting actor output action_std to : ", self.action_std)
+            self.set_action_std(self.action_std)
+
+        else:
+            print("WARNING : Calling PPO::decay_action_std() on discrete action space policy")
+
+        print("--------------------------------------------------------------------------------------------")
