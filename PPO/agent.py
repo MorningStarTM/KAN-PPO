@@ -2,7 +2,7 @@ import os
 import glob
 import time
 from datetime import datetime
-
+from buffer import RolloutBuffer
 import torch
 import torch.nn as nn
 from torch.distributions import MultivariateNormal
@@ -101,3 +101,32 @@ class ActorCritic(nn.Module):
         state_values = self.critic(state)
         
         return action_logprobs, state_values, dist_entropy
+    
+
+
+
+
+class PPO:
+    def __init__(self, state_dim, action_dim, lr_actor, lr_critic, gamma, K_epochs, eps_clip, has_continuous_action_space, action_std_init=0.6):
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.has_continuous_action_space = has_continuous_action_space
+
+        if has_continuous_action_space:
+            self.action_std = action_std_init
+
+        self.gamma = gamma
+        self.eps_clip = eps_clip
+        self.K_epochs = K_epochs
+        
+        self.buffer = RolloutBuffer()
+
+        self.policy = ActorCritic(state_dim, action_dim, has_continuous_action_space, action_std_init).to(self.device)
+        self.optimizer = torch.optim.Adam([
+                        {'params': self.policy.actor.parameters(), 'lr': lr_actor},
+                        {'params': self.policy.critic.parameters(), 'lr': lr_critic}
+                    ])
+
+        self.policy_old = ActorCritic(state_dim, action_dim, has_continuous_action_space, action_std_init).to(self.device)
+        self.policy_old.load_state_dict(self.policy.state_dict())
+        
+        self.MseLoss = nn.MSELoss()
