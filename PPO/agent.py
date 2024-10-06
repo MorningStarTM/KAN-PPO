@@ -2,7 +2,7 @@ import os
 import glob
 import time
 from datetime import datetime
-from buffer import RolloutBuffer
+from .buffer import RolloutBuffer
 import torch
 import torch.nn as nn
 from torch.distributions import MultivariateNormal
