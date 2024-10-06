@@ -40,3 +40,18 @@ log_f_name = log_dir + '/PPO_' + env_name + "_log_" + str(run_num) + ".csv"
 
 print("current logging run number for " + env_name + " : ", run_num)
 print("logging at : " + log_f_name)
+
+
+run_num_pretrained = 0      #### change this to prevent overwriting weights in same env_name folder
+
+directory = "result/PPO_preTrained"
+if not os.path.exists(directory):
+      os.makedirs(directory)
+
+directory = directory + '/' + env_name + '/'
+if not os.path.exists(directory):
+      os.makedirs(directory)
+
+
+checkpoint_path = directory + "PPO_{}_{}_{}.pth".format(env_name, random_seed, run_num_pretrained)
+print("save checkpoint path : " + checkpoint_path)
